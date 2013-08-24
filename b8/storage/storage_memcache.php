@@ -26,7 +26,7 @@ class b8_storage_memcache extends b8_storage_base
 {
 
 	# This is used to reference the DB
-	var $mem;
+	var $_memcache_conn;
     public $config= array(
         "createDb"=>FALSE,
         "host"=>"localhost",
@@ -51,7 +51,7 @@ class b8_storage_memcache extends b8_storage_base
         $mem=new Memcache();
         $mem->addServer($this->config["host"],$this->config["port"]);
         if($mem){
-            $this->mem=$mem;
+            $this->_memcache_conn=$mem;
             $this->constructed=TRUE;
         }
         else{
@@ -59,8 +59,8 @@ class b8_storage_memcache extends b8_storage_base
         }
 	}
     function __destruct(){
-        $this->mem->close();
-        unset($this->mem);
+        $this->_memcache_conn->close();
+        unset($this->_memcache_conn);
     }
     /**
      * Does the actual interaction with the database when fetching data.
@@ -133,7 +133,7 @@ class b8_storage_memcache extends b8_storage_base
                 print $b["file"].":".$b["line"]."<br>";
             }
         }
-        return $this->mem->get($this->config["prefix"].$token);
+        return $this->_memcache_conn->get($this->config["prefix"].$token);
 	}
 
     /**
@@ -249,14 +249,14 @@ class b8_storage_memcache extends b8_storage_base
     protected function _del($token)
     {
         //return $this->delete($token);
-        return $this->mem->delete($this->config["prefix"].$token,0);
+        return $this->_memcache_conn->delete($this->config["prefix"].$token,0);
     }
 
 	# Store a token to the database
 
 	function set($token, $count)
     {
-        return $this->mem->set($this->config["prefix"].$token,$count,0,Y25);
+        return $this->_memcache_conn->set($this->config["prefix"].$token,$count,0,Y25);
 	}
 
     /**
