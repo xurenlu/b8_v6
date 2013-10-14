@@ -222,7 +222,9 @@ class b8_lexer_u
 
 	function isValid($token)
 	{
-
+        if(empty($token)){
+            return FALSE;
+        }
 		# Check for a proper length
 		//only when the token is NOT Chinese we need to do the check
 		if(!preg_match('/[一-龥]/u', $token))
